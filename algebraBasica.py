@@ -16,58 +16,58 @@ tokens = [
 
 # Función para analizar el código fuente
 def analizar_lexico(codigo):
-    tokens_encontrados = []
-    pos = 0
-    longitud_codigo = len(codigo)
-    while pos < longitud_codigo:
-        match = None
+    tokens_encontrados = [] #lista de tokens encontrados
+    pos = 0 #posición actual en el código
+    longitud_codigo = len(codigo) #longitud del código guardada en una variable para no calcularla cada vez
+    while pos < longitud_codigo: #mientras no se haya llegado al final del código
+        match = None #inicializar match en None al menos que se encuentre un token
 
         # Ignorar espacios en blanco
-        if re.match(tokens[-1][1], codigo[pos]):
-            pos += 1
-            continue
+        if re.match(tokens[-1][1], codigo[pos]): #si el token es un espacio en blanco
+            pos += 1 #aumentar la posición en el código
+            continue 
 
-        for tipo, patron in tokens:
-            regex = re.compile(patron)
-            match = regex.match(codigo, pos)
-            if match:
-                valor = match.group(0)
+        for tipo, patron in tokens: #para cada tipo de token y su patrón
+            regex = re.compile(patron) #compilar el patrón en una expresión regular
+            match = regex.match(codigo, pos) #buscar el patrón en el código a partir de la posición actual
+            if match: #si se encontró el patrón
+                valor = match.group(0) #obtener el valor del token respecto al patrón
                 if tipo != 'WHITESPACE' and tipo != 'COMENTARIO':  # Ignoramos espacios y comentarios
-                    tokens_encontrados.append((tipo, valor))
-                pos = match.end(0)
+                    tokens_encontrados.append((tipo, valor)) #agregar el token a la lista de tokens encontrados
+                pos = match.end(0) #actualizar la posición actual en el código
                 break
-        if not match:
-            print(f"Error: Caracter no reconocido en la posición {pos}: '{codigo[pos]}'")
+        if not match: #si no se encontró un token
+            print(f"Error: Caracter no reconocido en la posición {pos}: '{codigo[pos]}'") #imprimir un mensaje de error con el caracter no reconocido
             return None
 
     # Verificación de errores específicos
-    balance_parentesis = 0
-    for tipo, valor in tokens_encontrados:
-        if valor == '(':
-            balance_parentesis += 1
-        elif valor == ')':
-            balance_parentesis -= 1
-        if balance_parentesis < 0:
+    balance_parentesis = 0 #inicializar el balance de paréntesis en 0
+    for tipo, valor in tokens_encontrados: #para cada token en la lista de tokens encontrados
+        if valor == '(': #si el token es un paréntesis de apertura
+            balance_parentesis += 1 #aumentar el balance de paréntesis
+        elif valor == ')': #si el token es un paréntesis de cierre
+            balance_parentesis -= 1 #disminuir el balance de paréntesis
+        if balance_parentesis < 0: #si el balance de parenteris es menor a 0 no hay paréntesis de apertura para cerrar
             print("Error: Paréntesis de cierre sin paréntesis de apertura.")
             return None
 
-    if balance_parentesis != 0:
+    if balance_parentesis != 0: #si el balance de paréntesis no es 0, hay paréntesis de apertura sin cerrar
         print("Error: Paréntesis de apertura sin paréntesis de cierre.")
         return None
 
-    return tokens_encontrados
+    return tokens_encontrados #retornar la lista de tokens encontrados
 
 # Solicitar al usuario que ingrese el código
 print("Ingresa tu código. Presiona Enter dos veces para finalizar.")
-codigo_fuente = ""
-while True:
-    linea = input()
-    if not linea:
-        break
-    codigo_fuente += linea + "\n"
+codigo_fuente = "" #inicializamos el código fuente como una cadena vacía
+while True: #mientras no se presione Enter dos veces
+    linea = input() #leer una línea de código
+    if not linea: #si la línea está vacía
+        break #salir del ciclo
+    codigo_fuente += linea + "\n" #agregar la línea al código fuente
 
 # Llamar al analizador léxico
-tokens_encontrados = analizar_lexico(codigo_fuente)
-if tokens_encontrados:
-    for token in tokens_encontrados:
-        print(token)
+tokens_encontrados = analizar_lexico(codigo_fuente) #llamar a la función analizar_lexico con el código fuente ingresado por el usuario
+if tokens_encontrados: #si hay tokens detectados
+    for token in tokens_encontrados: #para cada token en la lista de tokens encontrados
+        print(token) #imprimimos el token y su tipo
